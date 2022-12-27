@@ -42,8 +42,37 @@ func part1(in string) int64 {
 	return sumPrio
 }
 
-func part2(s string) int64 {
-	return -1
+func part2(in string) int64 {
+	var sumPrio int64
+	rows := strings.Split(in, "\n")
+	for i := 0; i < len(rows); i += 3 {
+		if rows[i] == "" {
+			break
+		}
+		m0 := make(map[byte]int64)
+		m1 := make(map[byte]int64)
+		m2 := make(map[byte]int64)
+		for j := 0; j < len(rows[i]); j++ {
+			m0[rows[i][j]]++
+		}
+		for j := 0; j < len(rows[i+1]); j++ {
+			m1[rows[i+1][j]]++
+		}
+		for j := 0; j < len(rows[i+2]); j++ {
+			m2[rows[i+2][j]]++
+		}
+		for k := range m0 {
+			if m1[k] > 0 && m2[k] > 0 {
+				if k <= 'z' && k >= 'a' {
+					sumPrio += int64(k - 'a' + 1)
+				}
+				if k <= 'Z' && k >= 'A' {
+					sumPrio += int64(k - 'A' + 27)
+				}
+			}
+		}
+	}
+	return sumPrio
 }
 
 func main() {

@@ -54,7 +54,24 @@ func part1(in string) int {
 	return -1
 }
 
-func part2(s string) int64 {
+func allDiff2(a string) bool {
+	m := make(map[byte]struct{})
+	for _, b := range []byte(a) {
+		m[b] = dummy
+	}
+	return len(m) == len(a)
+}
+
+func part2(in string) int {
+	for i := range in {
+		if i < 13 {
+			continue
+		}
+		if allDiff2(in[i-13 : i+1]) {
+			return i + 1
+		}
+	}
+	log.Panicf("found no fourteen diffs in a row %v", in)
 	return -1
 }
 

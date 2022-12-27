@@ -56,8 +56,30 @@ func part1(in string) int64 {
 	return coveredCount
 }
 
-func part2(s string) int64 {
-	return -1
+func part2(in string) int64 {
+	var coveredCount int64
+	for _, row := range strings.Split(in, "\n") {
+		if row == "" {
+			continue
+		}
+		cols := assertLen(strings.Split(row, ","), 2)
+
+		ass1 := assertLen(strings.Split(cols[0], "-"), 2)
+		ass1Lower := mustInt(ass1[0])
+		ass1Upper := mustInt(ass1[1])
+
+		ass2 := assertLen(strings.Split(cols[1], "-"), 2)
+		ass2Lower := mustInt(ass2[0])
+		ass2Upper := mustInt(ass2[1])
+
+		if (ass1Lower <= ass2Lower && ass2Lower <= ass1Upper) ||
+			(ass1Lower <= ass2Upper && ass2Upper <= ass1Upper) ||
+			(ass2Lower <= ass1Lower && ass1Lower <= ass2Upper) ||
+			(ass2Lower <= ass1Upper && ass1Upper <= ass2Upper) {
+			coveredCount++
+		}
+	}
+	return coveredCount
 }
 
 func main() {
