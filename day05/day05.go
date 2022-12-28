@@ -3,10 +3,11 @@ package main
 import (
 	_ "embed"
 	"fmt"
-	"golang.org/x/exp/slices"
 	"log"
 	"strconv"
 	"strings"
+
+	"golang.org/x/exp/slices"
 )
 
 //go:embed input_0.txt

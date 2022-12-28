@@ -1,8 +1,9 @@
 package main
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestPart1(t *testing.T) {
@@ -10,31 +11,31 @@ func TestPart1(t *testing.T) {
 		Convey("For demo input", func() {
 			in := input0
 			Convey("We get the right answer", func() {
-				So(part1(in), ShouldEqual, "CMZ")
+				So(part1(in), ShouldEqual, 95437)
 			})
 		})
 		Convey("For real input", func() {
 			in := input1
 			Convey("We get the right answer", func() {
-				So(part1(in), ShouldEqual, "LBLVVTVLP")
+				So(part1(in), ShouldEqual, 1517599)
 			})
 		})
 	})
 }
 
-//func TestPart2(t *testing.T) {
-//	Convey("For the part2", t, func() {
-//		Convey("For demo input", func() {
-//			in := input0
-//			Convey("We get the right answer", func() {
-//				So(part2(in), ShouldEqual, 12)
-//			})
-//		})
-//		Convey("For real input", func() {
-//			in := input1
-//			Convey("We get the right answer", func() {
-//				So(part2(in), ShouldEqual, 11258)
-//			})
-//		})
-//	})
-//}
+func TestPart2(t *testing.T) {
+	Convey("For the part2", t, func() {
+		Convey("For demo input", func() {
+			in := input0
+			Convey("We get the right answer", func() {
+				So(part2(in), ShouldEqual, 24933642)
+			})
+		})
+		Convey("For real input", func() {
+			in := input1
+			Convey("We get the right answer", func() {
+				So(part2(in), ShouldEqual, 2481982) // 17831881 is too high
+			})
+		})
+	})
+}

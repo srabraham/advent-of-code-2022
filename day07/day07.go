@@ -2,8 +2,6 @@ package main
 
 import (
 	_ "embed"
-	"fmt"
-	"golang.org/x/exp/slices"
 	"log"
 	"strconv"
 	"strings"
@@ -25,67 +23,158 @@ func assertLen[T any, S ~[]T](s S, length int) S {
 	return s
 }
 
-func mustInt(s string) int {
-	i, err := strconv.Atoi(s)
+func mustInt(s string) int64 {
+	i, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
 		log.Panic(err)
 	}
 	return i
 }
 
-func part1(in string) string {
-	rows := strings.Split(in, "\n")
-	// 0th element in each value is top of stack
-	state := make(map[int][]byte)
-	var rowInd int
-	for true {
-		row := rows[rowInd]
-		if strings.HasPrefix(row, " 1") {
-			break
-		}
-		for stackNum := 1; stackNum*4-3 < len(row); stackNum++ {
-			colInd := stackNum*4 - 3
-			v := row[colInd]
-			if v == ' ' {
-				continue
-			}
-			state[stackNum] = append(state[stackNum], v)
-		}
-		rowInd++
-	}
-	rowInd += 2
+type Filename string
 
-	// e.g.
-	// move 3 from 1 to 3
-	for ; rowInd < len(rows); rowInd++ {
-		row := rows[rowInd]
-		if row == "" {
-			break
-		}
-		spl := strings.Split(row, " ")
-		assertLen(spl, 6)
-		move := mustInt(spl[1])
-		from := mustInt(spl[3])
-		to := mustInt(spl[5])
-		for i := 0; i < move; i++ {
-			toMove := state[from][0]
-			state[from] = slices.Delete(state[from], 0, 1)
-			state[to] = slices.Insert(state[to], 0, toMove)
-		}
-	}
-
-	log.Print(state)
-
-	result := ""
-	for i := 1; i <= len(state); i++ {
-		result = fmt.Sprintf("%s%c", result, state[i][0])
-	}
-
-	return result
+type MyFile struct {
+	Name     Filename
+	Size     int64
+	IsDir    bool
+	Children map[Filename]*MyFile
+	Parent   *MyFile
 }
 
-func part2(s string) int64 {
-	return -1
+func (mf *MyFile) String() string {
+	//return fmt.Sprintf("%d:%s", mf.Size, string(mf.Name))
+	return string(mf.Name)
+}
+
+func (mf *MyFile) getOrAddChildDir(name Filename) *MyFile {
+	if _, ok := mf.Children[name]; !ok {
+		mf.Children[name] = &MyFile{
+			Name:     name,
+			IsDir:    true,
+			Children: make(map[Filename]*MyFile),
+			Parent:   mf,
+		}
+	}
+	return mf.Children[name]
+}
+
+func (mf *MyFile) getOrAddChildFile(name Filename, size int64) *MyFile {
+	if _, ok := mf.Children[name]; !ok {
+		mf.Children[name] = &MyFile{
+			Name:   name,
+			IsDir:  false,
+			Parent: mf,
+			Size:   size,
+		}
+	}
+	return mf.Children[name]
+}
+
+func (mf *MyFile) calculateSize() int64 {
+	if !mf.IsDir {
+		return mf.Size
+	}
+	var s int64
+	for _, f := range mf.Children {
+		s += f.calculateSize()
+	}
+	return s
+}
+
+func (mf *MyFile) getAllSubdirs() []*MyFile {
+	var subdirs []*MyFile
+	for _, f := range mf.Children {
+		if f.IsDir {
+			subdirs = append(subdirs, f)
+			subdirs = append(subdirs, f.getAllSubdirs()...)
+		}
+	}
+	return subdirs
+}
+
+func getFS(in string) (root *MyFile) {
+	rows := strings.Split(in, "\n")
+
+	root = &MyFile{
+		Name:     "/",
+		IsDir:    true,
+		Children: make(map[Filename]*MyFile),
+		Parent:   nil,
+	}
+
+	pwd := root
+
+	for i := 0; i < len(rows); i++ {
+		r := rows[i]
+		//log.Printf("processing row `%v`", r)
+		switch {
+		case r == "":
+			continue
+		case r == "$ cd /":
+			pwd = root
+		case r == "$ cd ..":
+			pwd = pwd.Parent
+		case strings.HasPrefix(r, "$ cd "):
+			subdirName := strings.TrimPrefix(r, "$ cd ")
+			subdir := pwd.getOrAddChildDir(Filename(subdirName))
+			pwd = subdir
+		case r == "$ ls":
+			for i++; i < len(rows) && !strings.HasPrefix(rows[i], "$"); i++ {
+				r = rows[i]
+				switch {
+				case r == "":
+					break
+				case strings.HasPrefix(r, "dir "):
+					subdirName := strings.TrimPrefix(r, "dir ")
+					_ = pwd.getOrAddChildDir(Filename(subdirName))
+				default:
+					splits := strings.Split(r, " ")
+					_ = pwd.getOrAddChildFile(Filename(splits[1]), mustInt(splits[0]))
+				}
+			}
+			i--
+		}
+	}
+	return root
+}
+
+func part1(in string) int64 {
+	root := getFS(in)
+	allDirs := []*MyFile{root}
+	allDirs = append(allDirs, root.getAllSubdirs()...)
+
+	var sumSize int64
+	for _, d := range allDirs {
+		if d.calculateSize() <= 100000 {
+			log.Printf("got %v %v", d, d.calculateSize())
+			sumSize += d.calculateSize()
+		}
+	}
+
+	return sumSize
+}
+
+func part2(in string) int64 {
+	diskAvail := int64(70000000)
+	desiredFree := int64(30000000)
+
+	root := getFS(in)
+	allDirs := []*MyFile{root}
+	allDirs = append(allDirs, root.getAllSubdirs()...)
+
+	diskUsed := root.calculateSize()
+	log.Printf("root dir has size %v", diskUsed)
+
+	bestDirSizeToRM := diskUsed
+	for _, d := range allDirs {
+		size := d.calculateSize()
+		if size < bestDirSizeToRM && diskUsed-size <= diskAvail-desiredFree {
+			log.Printf("dir %v is new best, brings usage to %v", d, diskUsed-size)
+			bestDirSizeToRM = size
+		}
+	}
+
+	return bestDirSizeToRM
 }
 
 func main() {
