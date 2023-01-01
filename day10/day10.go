@@ -24,6 +24,13 @@ func mustInt(s string) int64 {
 	return i
 }
 
+func abs(a, b int64) int64 {
+	if a > b {
+		return a - b
+	}
+	return b - a
+}
+
 func nextCommand(program string) func() string {
 	commands := strings.Split(program, "\n")
 	i := -1
@@ -85,4 +92,64 @@ func part1(in string) int64 {
 
 	}
 	return signalStrength
+}
+
+func part2(in string) string {
+	nextCmd := nextCommand(in)
+
+	xReg := int64(1)
+	running := false
+	cmd := "noop"
+	cmdDoneAfterCycle := int64(0)
+
+	result := "\n"
+
+	for cycle := int64(1); ; cycle++ {
+		// start of the cycle...if nothing is running, read a new command
+		if !running {
+			cmd = nextCmd()
+			if cmd == "" {
+				log.Printf("no commands remaining...breaking")
+				break
+			}
+			running = true
+			switch {
+			case cmd == "noop":
+				cmdDoneAfterCycle = cycle
+			case strings.HasPrefix(cmd, "addx "):
+				cmdDoneAfterCycle = cycle + 1
+			default:
+				log.Fatalf("bad command %v", cmd)
+			}
+		}
+
+		// in middle of cycle
+		horiz := (cycle - 1) % 40
+		switch {
+		case abs(xReg, horiz) <= 1:
+			result += "#"
+		default:
+			result += "."
+		}
+		if horiz == 40-1 {
+			//log.Printf("during cycle %v, command %v, xReg %v", cycle, cmd, xReg)
+			//signalStrength += cycle * xReg
+			result += "\n"
+		}
+
+		// end of cycle...if command is done, let it finish
+		if cycle == cmdDoneAfterCycle {
+			running = false
+			switch {
+			case cmd == "noop":
+				break
+			case strings.HasPrefix(cmd, "addx "):
+				xReg += mustInt(strings.TrimPrefix(cmd, "addx "))
+			default:
+				log.Fatalf("unexpected cmd %v", cmd)
+			}
+		}
+
+	}
+	return result
 }
