@@ -3,7 +3,7 @@ policy:
     - or:
       - sean approves
 approval_rules:
-  - name: the devtools team has approved
+  - name: sean approves
     requires:
       count: 1
       users:
