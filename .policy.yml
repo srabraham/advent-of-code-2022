@@ -27,7 +27,7 @@ approval_rules:
   - name: day01 owners approve
     if:
       changed_files:
-        paths: "day01/.*"
+        paths: ["day01/.*"]
     options:
       ignore_update_merges: true
     requires:
@@ -37,7 +37,7 @@ approval_rules:
   - name: day02 owners approve
     if:
       changed_files:
-        paths: "day02/.*"
+        paths: ["day02/.*"]
     options:
       ignore_update_merges: true
     requires:
