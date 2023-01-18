@@ -1,0 +1,10 @@
+policy:
+  approval:
+    - or:
+      - sean approves
+approval_rules:
+  - name: the devtools team has approved
+    requires:
+      count: 1
+      users:
+        - "srabraham"
