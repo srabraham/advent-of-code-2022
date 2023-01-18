@@ -2,10 +2,11 @@ policy:
   approval:
     - and:
       - anyone approves
-      - admin approves
-      - and:
-        - day01 owners approve
-        - day02 owners approve
+      - or:
+        - admin approves
+        - and:
+          - day01 owners approve
+          - day02 owners approve
 approval_rules:
   - name: anyone approves
     options:
