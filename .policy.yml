@@ -1,9 +1,22 @@
 policy:
   approval:
-    - or:
-      - sean approves
+    - and:
+      - anyone approves
+      - lgtm approves
 approval_rules:
-  - name: sean approves
+  - name: anyone approves
+    options:
+      ignore_update_merges: true
+    requires:
+      count: 1
+      organizations: ["VideoAmp"]
+      users: ["srabraham"]
+  - name: admin approves
+    options:
+      allow_author: true
+      allow_contributor: true
+      allow_non_author_contributor: true
+      ignore_update_merges: true
     requires:
       count: 1
       users:
