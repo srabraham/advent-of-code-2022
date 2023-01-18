@@ -30,6 +30,9 @@ approval_rules:
       changed_files:
         paths: ["day01/.*"]
     options:
+      allow_author: true
+      allow_contributor: true
+      allow_non_author_contributor: true
       ignore_update_merges: true
     requires:
       count: 1
@@ -40,6 +43,9 @@ approval_rules:
       changed_files:
         paths: ["day02/.*"]
     options:
+      allow_author: true
+      allow_contributor: true
+      allow_non_author_contributor: true
       ignore_update_merges: true
     requires:
       count: 1
