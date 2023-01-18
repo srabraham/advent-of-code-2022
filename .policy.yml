@@ -3,6 +3,9 @@ policy:
     - and:
       - anyone approves
       - admin approves
+      - and:
+        - day01 owners approve
+        - day01 owners approve
 approval_rules:
   - name: anyone approves
     options:
@@ -21,3 +24,23 @@ approval_rules:
       count: 1
       users:
         - "srabraham"
+  - name: day01 owners approve:
+    if:
+      changed_files:
+        paths: "day01/.*"
+    options:
+      ignore_update_merges: true
+    requires:
+      count: 1
+      organizations: ["VideoAmp"]
+      users: ["srabraham"]
+  - name: day01 owners approve:
+    if:
+      changed_files:
+        paths: "day02/.*"
+    options:
+      ignore_update_merges: true
+    requires:
+      count: 1
+      organizations: ["VideoAmp"]
+      users: ["srabraham"]
