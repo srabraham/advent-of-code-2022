@@ -1,14 +1,15 @@
 policy:
   approval:
     - and:
-      - lgtm
+      - LGTM
       - or:
         - admin approval
         - and:
           - day01 owners approval
           - day02 owners approval
 approval_rules:
-  - name: lgtm
+  - name: LGTM
+    description: Get an approval from any member of the organization
     options:
       ignore_update_merges: true
     requires:
@@ -16,6 +17,7 @@ approval_rules:
       organizations: ["VideoAmp"]
       users: ["srabraham"]
   - name: admin approval
+    description: Admins are able to approve any PR, but you should generally seek approval from subdirectory codeowners first
     options:
       allow_author: true
       allow_contributor: true
