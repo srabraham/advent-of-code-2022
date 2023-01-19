@@ -1,21 +1,21 @@
 policy:
   approval:
     - and:
-      - anyone approves
+      - lgtm
       - or:
-        - admin approves
+        - admin approval
         - and:
-          - day01 owners approve
-          - day02 owners approve
+          - day01 owners approval
+          - day02 owners approval
 approval_rules:
-  - name: anyone approves
+  - name: lgtm
     options:
       ignore_update_merges: true
     requires:
       count: 1
       organizations: ["VideoAmp"]
       users: ["srabraham"]
-  - name: admin approves
+  - name: admin approval
     options:
       allow_author: true
       allow_contributor: true
@@ -25,7 +25,7 @@ approval_rules:
       count: 1
       users:
         - "srabraham"
-  - name: day01 owners approve
+  - name: day01 owners approval
     if:
       changed_files:
         paths: ["day01/.*"]
@@ -38,7 +38,7 @@ approval_rules:
       count: 1
       organizations: ["VideoAmp"]
       users: ["srabraham"]
-  - name: day02 owners approve
+  - name: day02 owners approval
     if:
       changed_files:
         paths: ["day02/.*"]
