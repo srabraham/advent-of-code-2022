@@ -9,7 +9,7 @@ policy:
           - day02 owners approval
 approval_rules:
   - name: LGTM
-    description: Get an approval from any member of the organization
+    description: Get an approval from another person
     options:
       ignore_update_merges: true
     requires:
@@ -17,7 +17,7 @@ approval_rules:
       organizations: ["VideoAmp"]
       users: ["srabraham"]
   - name: admin approval
-    description: Admins are able to approve any PR, but you should generally seek approval from subdirectory codeowners first
+    description: Admins can apply codeowners approval for any PR
     options:
       allow_author: true
       allow_contributor: true
@@ -28,6 +28,7 @@ approval_rules:
       users:
         - "srabraham"
   - name: day01 owners approval
+    description: codeowners approval - an author can self-approve
     if:
       changed_files:
         paths: ["day01/.*"]
@@ -41,6 +42,7 @@ approval_rules:
       organizations: ["VideoAmp"]
       users: ["srabraham"]
   - name: day02 owners approval
+    description: codeowners approval - an author can self-approve
     if:
       changed_files:
         paths: ["day02/.*"]
