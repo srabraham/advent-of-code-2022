@@ -19,6 +19,7 @@ var input1 string
 var input2 string
 
 func part1(in string) int64 {
+
 	spl := strings.Split(in, "\n")
 	var cals []int64
 	var curr int64
